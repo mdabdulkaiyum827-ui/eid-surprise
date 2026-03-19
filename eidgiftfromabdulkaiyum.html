@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ঈদের শুভেচ্ছা</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Hind Siliguri', sans-serif;
+    background-color: #000;
+    overflow: hidden;
+    color: #fff;
+  }
+
+  .container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    overflow: hidden;
+  }
+
+  /* ফেস্টিভ ব্যাকগ্রাউন্ড */
+  .background-scene {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://i.ibb.co/3Wf0z6g/mosque-night.jpg') no-repeat center center/cover; /* আপনার মসজিদ/প্যালেস ছবির লিঙ্ক */
+    opacity: 0.3;
+    z-index: 1;
+    filter: blur(5px);
+  }
+
+  /* ধোঁয়াটে আলোর ইফেক্ট */
+  .glow-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 2;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    animation: particleAnimation 15s infinite ease-in-out;
+  }
+  @keyframes particleAnimation {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    50% { transform: translateY(50vh) scale(1); opacity: 1; }
+    100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+  }
+
+  /* মোবাইল ডিভাইস ফ্রেম */
+  .phone-frame {
+    position: relative;
+    width: 360px; /* একটি গড় মোবাইল প্রস্থ */
+    height: 740px; /* একটি গড় মোবাইল উচ্চতা */
+    border: 12px solid #333;
+    border-radius: 36px;
+    background-color: #050505;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    z-index: 10;
+    border-color: #ffd700; /* গোল্ডেন বর্ডার */
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+
+  /* মোবাইল স্ক্রিন কন্টেন্ট */
+  .phone-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+  }
+
+  /* গ্লাসমরফিজম ইফেক্ট */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    padding: 30px;
+    text-align: center;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    width: 90%;
+  }
+
+  /* গোল্ডেন গ্লো টেক্সট */
+  .gold-glow-text {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  /* গোল্ডেন এমবসড গিফট বক্স আইকন */
+  .gift-box-icon {
+    font-size: 80px;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5), -1px -1px 0 rgba(255,255,255,0.2);
+    margin-bottom: 30px;
+    animation: pulse 2s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+  }
+
+  /* প্রিমিয়াম গোল্ডেন বোতাম */
+  .gold-button {
+    background: linear-gradient(45deg, #ffd700, #ffae00);
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+  .gold-button:hover {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+    transform: scale(1.05);
+  }
+
+  /* ধাপে ধাপে কন্টেন্ট (শুরুতে লুকানো) */
+  .step-content {
+    display: none;
+    position: absolute;
+    width: 90%;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+  }
+  .step-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ৩ডি এনিমেশন উপাদান (কাল্পনিক) */
+  .icon-3d {
+    font-size: 60px;
+    color: #ffd700;
+    margin-bottom: 20px;
+  }
+
+  /* ফায়ারওয়ার্কস এনিমেশন (সরলীকৃত) */
+  .fireworks-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 5;
+  }
+  .firework {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: #ffd700;
+    border-radius: 50%;
+    animation: fireworkExplode 1s ease-out forwards;
+  }
+  @keyframes fireworkExplode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(30); opacity: 0; }
+  }
+
+  /* ওয়াটারমার্ক */
+  .watermark {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 20;
+  }
+
+  /* রেসপনসিভ অ্যাডজাস্টমেন্ট */
+  @media (max-width: 400px) {
+    .phone-frame {
+      width: 90vw;
+      height: 80vh;
+      border-width: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="background-scene"></div>
+
+  <div class="glow-particles" id="particles"></div>
+
+  <div class="phone-frame">
+    <div class="phone-screen">
+      
+      <div class="glass-panel active-step" id="welcome-step">
+        <div class="gift-box-icon">🎁</div>
+        <h1 class="gold-glow-text">তোমার জন্য একটি সারপ্রাইজ!</h1>
+        <button class="gold-button" id="open-surprise">সারপ্রাইজটি খুলুন</button>
+      </div>
+
+      <div class="glass-panel step-content" id="step1">
+        <div class="icon-3d">🌙✨</div>
+        <h2 class="gold-glow-text" id="typing-text1"></h2>
+      </div>
+
+      <div class="glass-panel step-content" id="step2">
+        <div class="icon-3d">🏮</div>
+        <p class="gold-glow-text">তোমার এবং তোমার পরিবারের সবার জীবন আনন্দে ভরে উঠুক। "تقبل الله منا ومنكم صالح الاعمال"</p>
+        <p class="gold-glow-text" style="font-size: 28px;">ঈদ মোবারক!</p>
+      </div>
+
+      <div class="glass-panel step-content" id="step3">
+        <div class="icon-3d">🎉</div>
+        <h1 class="gold-glow-text" style="font-size: 36px;">আব্দুল কাইয়ুম এর পক্ষ থেকে শুভ ঈদ-উল-ফিতর!</h1>
+      </div>
+
+      <div class="fireworks-container" id="fireworks"></div>
+
+      <div class="watermark">Created by MD ABDUL KAIYUM ❤️</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // পার্টিকেল এনিমেশন তৈরি
+  const particlesContainer = document.getElementById('particles');
+  for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.width = Math.random() * 5 + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.left = Math.random() * 100 + 'vw';
+    particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    particlesContainer.appendChild(particle);
+  }
+
+  // ধাপের সিকোয়েন্স লজিক
+  const openBtn = document.getElementById('open-surprise');
+  const steps = [
+    document.getElementById('welcome-step'),
+    document.getElementById('step1'),
+    document.getElementById('step2'),
+    document.getElementById('step3')
+  ];
+  let currentStep = 0;
+
+  function nextStep() {
+    steps[currentStep].classList.remove('active', 'active-step');
+    steps[currentStep].style.display = 'none'; // আগের ধাপ লুকিয়ে ফেলা
+
+    currentStep++;
+
+    if (currentStep < steps.length) {
+      steps[currentStep].classList.add('active');
+      steps[currentStep].style.display = 'block'; // বর্তমান ধাপ দেখানো
+
+      // নির্দিষ্ট ধাপের এনিমেশন/ইফেক্ট
+      if (currentStep === 1) {
+        typeWriter("typing-text1", "ঈদের চাঁদ উঠেছে আকাশে!");
+        setTimeout(nextStep, 4000); // ৪ সেকেন্ড পর পরের ধাপে
+      } else if (currentStep === 2) {
+        setTimeout(nextStep, 5000); // ৫ সেকেন্ড পর চূড়ান্ত ধাপে
+      } else if (currentStep === 3) {
+        startFireworks();
+      }
+    }
+  }
+
+  openBtn.addEventListener('click', nextStep);
+
+  // টাইপিং ইফেক্ট
+  function typeWriter(elementId, text) {
+    let i = 0;
+    const speed = 100; // টাইপিং গতি
+    const element = document.getElementById(elementId);
+    element.innerHTML = "";
+    function type() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      }
+    }
+    type();
+  }
+
+  // ফায়ারওয়ার্কস এনিমেশন (সরলীকৃত)
+  const fireworksContainer = document.getElementById('fireworks');
+  function startFireworks() {
+    fireworksContainer.style.display = 'block';
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const firework = document.createElement('div');
+        firework.classList.add('firework');
+        firework.style.left = Math.random() * 80 + 10 + '%';
+        firework.style.top = Math.random() * 50 + 10 + '%';
+        firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`; // রঙিন বাজি
+        fireworksContainer.appendChild(firework);
+        setTimeout(() => firework.remove(), 1000); // এনিমেশন শেষে সরিয়ে ফেলা
+      }, i * 300); // একের পর এক বাজি ফোটানো
+    }
+  }
+
+</script>
+
+</body>
+</html>
