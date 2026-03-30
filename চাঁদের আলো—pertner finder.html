@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>চাঁদের আলো - Soulmate Finder</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #4a0e4e 50%, #1a1a2e 100%);
+            color: #fff; display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        /* Animated Glowing Orbs */
+        .orb {
+            position: absolute; width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(255, 0, 128, 0.4), transparent 70%);
+            filter: blur(50px); border-radius: 50%; z-index: 1;
+            animation: move 10s infinite alternate;
+        }
+        @keyframes move { from { transform: translate(-50%, -50%); } to { transform: translate(50%, 50%); } }
+
+        /* Floating Hearts */
+        .heart {
+            position: absolute; color: rgba(255, 105, 180, 0.6);
+            animation: float 5s infinite ease-in; z-index: 2;
+        }
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            position: relative; z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px; border-radius: 40px;
+            width: 85%; max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            text-align: center; border-bottom: 3px solid #ff416c;
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 5px; color: #ffeb3b; text-shadow: 0 0 20px rgba(255, 235, 59, 0.6); }
+        p { font-size: 1rem; color: #e0e0e0; margin-bottom: 30px; letter-spacing: 0.5px; }
+
+        input {
+            width: 85%; padding: 14px; margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(255, 65, 108, 0.5);
+            border-radius: 15px; color: #fff; font-size: 1.1rem; text-align: center;
+            transition: 0.3s; outline: none;
+        }
+        input:focus { border-color: #ff416c; box-shadow: 0 0 15px rgba(255, 65, 108, 0.4); }
+
+        button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none; padding: 14px 35px; border-radius: 30px;
+            color: #fff; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.4);
+            transition: 0.4s;
+        }
+        button:hover { transform: scale(1.05); background: linear-gradient(45deg, #ff4b2b, #ff416c); }
+
+        #loader { display: none; margin: 25px auto; border: 4px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #ffeb3b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #result { margin-top: 30px; font-size: 1.2rem; font-weight: 500; }
+        .soulmate-name { color: #00ffcc; font-size: 1.6rem; font-weight: 800; display: block; margin-top: 10px; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+
+        .footer {
+            position: fixed; bottom: 15px; right: 20px;
+            font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);
+            font-weight: bold; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="orb" style="top: 20%; left: 30%;"></div>
+    <div class="orb" style="bottom: 10%; right: 20%;"></div>
+
+    <div class="container">
+        <h1>চাঁদের আলো</h1>
+        <p>AI দিয়ে তোমার পারফেক্ট Soulmate খুঁজে নাও ✨</p>
+        <input type="text" id="nameInput" placeholder="তোমার নাম এখানে লেখো...">
+        <br>
+        <button onclick="findSoulmate()">Match খোঁজো</button>
+        <div id="loader"></div>
+        <div id="result"></div>
+    </div>
+
+    <div class="footer">Created by MD Abdul Kaiyum ❤️</div>
+
+    <script>
+        // Heart Animation
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = ['❤️','💖','💗','💘'][Math.floor(Math.random()*4)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 25 + 15 + 'px';
+            heart.style.animationDuration = Math.random() * 2 + 4 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
+        setInterval(createHeart, 350);
+
+        // Fuzzy Match logic (Simple version to detect name fragments)
+        function checkName(input, targetArray) {
+            input = input.toLowerCase().replace(/\s/g, '');
+            return targetArray.some(target => {
+                let cleanTarget = target.toLowerCase().replace(/\s/g, '');
+                return input.includes(cleanTarget) || cleanTarget.includes(input);
+            });
+        }
+
+        function findSoulmate() {
+            const name = document.getElementById('nameInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const loader = document.getElementById('loader');
+
+            if (!name) { alert("নাম না লিখলে ম্যাচ খুঁজবো কী করে? 🙄"); return; }
+
+            resultDiv.innerHTML = "";
+            loader.style.display = "block";
+
+            setTimeout(() => {
+                loader.style.display = "none";
+                let match = "";
+                let msg = "";
+
+                const inputLow = name.toLowerCase();
+
+                // 1. Special Fixed Couples
+                if (inputLow.includes("robin")) {
+                    match = "Masrafi Jahan Mim";
+                    msg = "বুম! তোমার Soulmate ইজ <span class='soulmate-name'>" + match + "</span>। পার্টি কবে দিচ্ছ? 🎉";
+                } else if (inputLow.includes("mim") || inputLow.includes("masrafi")) {
+                    match = "Md Robin";
+                    msg = "Congratulations! তোমার পারফেক্ট ম্যাচ হলো <span class='soulmate-name'>" + match + "</span>। তোমরাই সেরা কাপল! ❤️";
+                } else if (inputLow.includes("nishi") || inputLow.includes("mou")) {
+                    match = "Afnan Chowdhury";
+                    msg = "Wow! তোমার পারফেক্ট ম্যাচ খুঁজে পাওয়া গেছে: <span class='soulmate-name'>" + match + "</span>। 💘";
+                } else if (inputLow.includes("jannatun")) {
+                    match = "Akash Islam";
+                    msg = "Nice! তোমার Soulmate হলো <span class='soulmate-name'>" + match + "</span>। অনেক মিল তোমাদের মাঝে! ✨";
+                }
+                
+                // 2. Admin Logic (MD Abdul Kaiyum)
+                else if (inputLow.includes("kaiyum") || inputLow.includes("abdul")) {
+                    msg = "You are the King! 👑 পুরো গ্রুপই তো তোমার ফ্যান। তুমি নিজেই নিজের বস!";
+                }
+
+                // 3. All Other Girls (Result: MD Abdul Kaiyum)
+                else if (checkName(name, ["Mahiya", "Fariha", "Nil", "Rime", "Riya", "Ruhi", "Sumaiya", "Tonni", "Za Ra", "ম্যিঁলি", "রানি", "তিন্নী", "তুলি"])) {
+                    match = "MD Abdul Kaiyum";
+                    msg = "Congratulations! Fate হেজ চোজেন দ্য বেস্ট ফর ইউ! তোমার পারফেক্ট Soulmate হলো <span class='soulmate-name'>" + match + "</span>। ❤️";
+                }
+
+                // 4. Other Boys Troll
+                else {
+                    const trolls = [
+                        "Error 404: No match found! কপালে সিগন্যাল নাই, সিঙ্গেলই থাকো! 😂",
+                        "ম্যাচ খোঁজা বাদ দিয়ে একটু আড্ডা দাও, গার্লফ্রেন্ড এমনিই হবে না! 🏃‍♂️",
+                        "সরি! তোমার ম্যাচ এই মুহূর্তে অন্য একজনের সাথে ব্যস্ত আছে! 💔",
+                        "AI বলছে তোমার জন্য একা থাকাই মঙ্গলজনক! 🧘‍♂️",
+                        "তোমার Soulmate এখনো পৃথিবীতে আসেনি, ২০৩০ সাল পর্যন্ত ওয়েট করো! 👶",
+                        "তুমি দেখতে এতই 'জোস' যে কোনো মেয়ে তোমার ধারেকাছে আসতে সাহস পাচ্ছে না! 😵"
+                    ];
+                    msg = trolls[Math.floor(Math.random() * trolls.length)];
+                }
+
+                resultDiv.innerHTML = msg;
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
